@@ -11,7 +11,7 @@ const Company = require("../models/company");
 
 const companyNewSchema = require("../schemas/companyNew.json");
 const companyUpdateSchema = require("../schemas/companyUpdate.json");
-const { ensureAdmin } = require("../middleware/auth");
+const { ensureAdmin } = require("../middleware/auth"); 
 
 const router = new express.Router();
 

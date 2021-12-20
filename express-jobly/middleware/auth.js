@@ -43,6 +43,15 @@ function ensureLoggedIn(req, res, next) {
   }
 } 
 
+function ensureAdmin(req, res, next){
+  try {
+    console.log(`%%%%%%%%%%%%%%%%%%   arrived at ensureAdmin()  %%%%%%%%%%%%`)
+    
+  } catch (err) {
+    return next(err);
+  }
+}
+
 
 module.exports = {
   authenticateJWT,
