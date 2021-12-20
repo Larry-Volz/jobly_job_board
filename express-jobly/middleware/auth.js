@@ -41,7 +41,7 @@ function ensureLoggedIn(req, res, next) {
   } catch (err) {
     return next(err);
   }
-}
+} 
 
 
 module.exports = {

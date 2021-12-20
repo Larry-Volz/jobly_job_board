@@ -4,7 +4,7 @@ const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
 
-/** Related functions for companies. */
+/** Related functions for companies. */ 
 
 class Company {
   /** Create a company (from data), update db, return new company data.
@@ -50,15 +50,48 @@ class Company {
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    * */
 
-  static async findAll() {
-    const companiesRes = await db.query(
-          `SELECT handle,
+  static async findAll(_queries = {}) {
+    let query = `SELECT handle, 
                   name,
                   description,
                   num_employees AS "numEmployees",
                   logo_url AS "logoUrl"
-           FROM companies
-           ORDER BY name`);
+                  FROM companies`
+    
+    let wheres = [];
+    let parameterizers = [];
+    let queryLength=0;
+    
+    const { minEmployees, maxEmployees, name } = _queries;
+    
+    if (minEmployees > maxEmployees) {
+      throw new BadRequestError("Max employees must be more than min");
+    }
+    
+    if (minEmployees !== undefined){
+      queryLength++;
+      parameterizers.push(minEmployees);
+      wheres.push(`num_employees >= $${queryLength}`)
+    }
+
+    if (maxEmployees !==undefined){
+      queryLength++;
+      parameterizers.push(`num_employees <= $${queryLength}`)
+    }
+
+    if (name){
+      queryLength++;
+      parameterizers.push(`%${name}%`);
+      wheres.push(`name ILIKE $${queryLength}`)
+    }
+    
+    if (queryLength > 0) {
+      query += " WHERE " + wheres.join(" AND ");
+    }
+
+    query += " ORDER BY name";
+    
+    const companiesRes = await db.query(query, parameterizers);
     return companiesRes.rows;
   }
 

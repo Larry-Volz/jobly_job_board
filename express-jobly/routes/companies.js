@@ -11,6 +11,7 @@ const Company = require("../models/company");
 
 const companyNewSchema = require("../schemas/companyNew.json");
 const companyUpdateSchema = require("../schemas/companyUpdate.json");
+const { ensureAdmin } = require("../../express-jobly-solution/middleware/auth");
 
 const router = new express.Router();
 
@@ -42,7 +43,7 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
 /** GET /  =>
  *   { companies: [ { handle, name, description, numEmployees, logoUrl }, ...] }
  *
- * TODO?
+ * DONE
  * 
  * Can filter on provided search filters:
  * - minEmployees
@@ -50,11 +51,29 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  * - nameLike (will find case-insensitive, partial matches)
  *
  * Authorization required: none
+ * 
+ * QUESTIONS:
+ * - WHY 2 PARAMETERS FOR SEARCH?
+ * - WHY THIS ERROR MESSAGE WHEN > 1 ARGUMENTS PASSED? 
+ * {
+	"error": {
+		"message": "bind message supplies 2 parameters, but prepared statement \"\" requires 1",
+		"status": 500
+	}
+}
  */
 
 router.get("/", async function (req, res, next) {
+
+  const _query = req.query;
+
+  if (_query.minEmployees !== undefined) {_query.minEmployees = +_query.minEmployees};
+  if (_query.maxEmployees !== undefined) _query.maxEmployees = +_query.maxEmployees;
+
+
+
   try {
-    const companies = await Company.findAll();
+    const companies = await Company.findAll(_query);
     return res.json({ companies });
   } catch (err) {
     return next(err);
@@ -85,11 +104,13 @@ router.get("/:handle", async function (req, res, next) {
  * fields can be: { name, description, numEmployees, logo_url }
  *
  * Returns { handle, name, description, numEmployees, logo_url }
+ * 
+ * TODO:
  *
  * Authorization required: login
  */
 
-router.patch("/:handle", ensureLoggedIn, async function (req, res, next) {
+router.patch("/:handle", ensureAdmin, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, companyUpdateSchema);
     if (!validator.valid) {
@@ -106,10 +127,11 @@ router.patch("/:handle", ensureLoggedIn, async function (req, res, next) {
 
 /** DELETE /[handle]  =>  { deleted: handle }
  *
+ * TODO:
  * Authorization: login
  */
 
-router.delete("/:handle", ensureLoggedIn, async function (req, res, next) {
+router.delete("/:handle", ensureAdmin, async function (req, res, next) {
   try {
     await Company.remove(req.params.handle);
     return res.json({ deleted: req.params.handle });
