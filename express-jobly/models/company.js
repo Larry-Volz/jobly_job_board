@@ -1,4 +1,4 @@
-"use strict";
+"use strict"; 
 
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
@@ -23,7 +23,7 @@ class Company {
            WHERE handle = $1`,
         [handle]);
 
-    //QUESTION: if there is only one won't it have a .rows[0]???
+    //NOTE: if new it shouldn't return anything 
     if (duplicateCheck.rows[0])
       throw new BadRequestError(`Duplicate company: ${handle}`);
 
