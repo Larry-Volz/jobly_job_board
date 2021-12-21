@@ -16,14 +16,14 @@ class Job {
      * */
 
     static async create({ title, salary, equity, companyHandle}) {
-        const duplicateCheck = await db.query(
-            `SELECT company_handle
-            FROM jobs
-            WHERE company_handle = $1`,
-            [companyHandle]);        
+        // const duplicateCheck = await db.query(
+        //     `SELECT title, companyHandle
+        //     FROM jobs
+        //     WHERE company_handle = $1`,
+        //     [companyHandle]);        
             
-        if (duplicateCheck.rows[0])
-            throw new BadRequestError(`Duplicate company: ${companyHandle}`);
+        // if (duplicateCheck.rows[0])
+        //     throw new BadRequestError(`Duplicate job: ${companyHandle}`);
             
         const result = await db.query(
             `INSERT INTO jobs
@@ -46,6 +46,7 @@ class Job {
 
     /** Find all jobs.
    *
+   * TODO:
    * Returns [{ _______ }, ...]
    * */
 
@@ -54,6 +55,7 @@ class Job {
 
     /** Given a job id, return data about job.
    *
+   * TODO:
    * Returns { ____ }
    *
    * Throws NotFoundError if not found.
@@ -63,6 +65,7 @@ class Job {
 
     /** Update job data with `data`.
    *
+   * TODO:
    * This is a "partial update" --- it's fine if data doesn't contain all the
    * fields; this only changes provided ones.
    *
@@ -78,6 +81,7 @@ class Job {
 
     /** Delete given job from database; returns undefined.
    *
+   * TODO:
    * Throws NotFoundError if company not found.
    **/
 
