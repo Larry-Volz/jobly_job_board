@@ -10,15 +10,11 @@ const {
     commonAfterAll,
 } = require("./_testCommon");
 
-// beforeAll(commonBeforeAll);
-// beforeEach(commonBeforeEach);
-// afterEach(commonAfterEach);
-// afterAll(commonAfterAll);
+beforeAll(commonBeforeAll);
+beforeEach(commonBeforeEach);
+afterEach(commonAfterEach);
+afterAll(commonAfterAll);
 
-afterAll(async function() {
-    // close db connection
-    await db.end();
-  });
 
 
 /**
@@ -27,40 +23,32 @@ afterAll(async function() {
  */
  describe("create", function () {
     const newJob = {
-        companyHandle: "bauer-gallagher",
         title: "New job",
         salary: 60000,
         equity: 0.1,
+        companyHandle: "c1",
     };
   
     test("works", async function () {
-      let job = await Job.create(newJob);
-      expect(job.title).toEqual(title);
+        let job = await Job.create(newJob);
+        expect(job.title).toEqual(newJob.title);
   
-    //   const result = await db.query(
-    //         `SELECT handle, name, description, num_employees, logo_url
-    //          FROM companies
-    //          WHERE handle = 'new'`);
-    //   expect(result.rows).toEqual([
-    //     {
-    //       handle: "new",
-    //       name: "New",
-    //       description: "New Description",
-    //       num_employees: 1,
-    //       logo_url: "http://new.img",
-    //     },
-    //   ]);
+    const result = await db.query(
+        `SELECT id, title, salary, equity, company_handle
+            FROM jobs
+            WHERE id = ${job.id}`);
+      expect(result.rows).toEqual([
+        {
+            id: job.id,
+            title: "New job",
+            salary: 60000,
+            equity: "0.1",
+            company_handle: "c1",
+        },
+      ]);
     });
   
-    // test("bad request with dupe", async function () {
-    //   try {
-    //     await Company.create(newCompany);
-    //     await Company.create(newCompany);
-    //     fail();
-    //   } catch (err) {
-    //     expect(err instanceof BadRequestError).toBeTruthy();
-    //   }
-    // });
+
   });
 
 /**
