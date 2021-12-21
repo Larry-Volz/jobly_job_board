@@ -33,9 +33,10 @@ afterAll(commonAfterAll);
   
     test("works", async function () {
         let job = await Job.create(newJob);
+        //NOTE: ...newJob expands it
         expect(job).toEqual({
             ...newJob,
-            id:expect.any(Number)
+            id: expect.any(Number)
         });
   
     const result = await db.query(
@@ -60,7 +61,45 @@ afterAll(commonAfterAll);
  * TODO:
  * Test Read
  */
-
+ describe("findAll", function () {
+    test("basic search with no filter", async function () {
+      let jobs = await Job.findAll();
+      expect(jobs).toEqual([
+        {
+            id: expect.any(Number),
+            title: "Job1",
+            salary: 100,
+            equity: "0.1",
+            companyHandle: "c1",
+            companyName: "C1",
+        },
+        {
+            id: expect.any(Number),
+            title: "Job2",
+            salary: 200,
+            equity: "0.2",
+            companyHandle: "c1",
+            companyName: "C1",
+        },
+        {
+            id: expect.any(Number),
+            title: "Job3",
+            salary: 300,
+            equity: "0",
+            companyHandle: "c1",
+            companyName: "C1",
+        },
+        {
+            id: expect.any(Number),
+            title: "Job4",
+            salary: null,
+            equity: null,
+            companyHandle: "c1",
+            companyName: "C1",
+        },
+      ]);
+    });
+});
 
 
 /**

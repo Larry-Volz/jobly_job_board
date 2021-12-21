@@ -44,12 +44,13 @@ class Job {
    * */
      static async findAll(_queries = {}) {
         let query = `SELECT 
-                        id, 
-                        title, 
-                        salary, 
-                        equity, 
-                        company_handle
-                        FROM jobs`
+                        j.id, 
+                        j.title, 
+                        j.salary, 
+                        j.equity, 
+                        j.company_handle AS "companyHandle"
+                    FROM jobs j
+                    LEFT JOIN companies AS c ON c.handle = j.company_handle`
         
         let wheres = [];
         let parameterizers = [];
@@ -63,7 +64,7 @@ class Job {
           wheres.push(`salary >= $${queryLength}`)
         }
     
-        if (hasEquity !==undefined){
+        if (hasEquity === true){
           queryLength++;
           parameterizers.push(`equity > 0`)
         }
