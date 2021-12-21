@@ -6,6 +6,7 @@ const { sqlForPartialUpdate } = require("../helpers/sql");
 
 
 class Job {
+
     /** Create a job (from data), update db, return new company data.
      *
      * input data should be { title, salary, equity, companyHandle }
@@ -13,23 +14,15 @@ class Job {
      * Returns { id, title, salary, equity, companyHandle  }
      *
      * Throws BadRequestError if job already in database.
+     * DONE
      * */
 
     static async create({ title, salary, equity, companyHandle}) {
-        // const duplicateCheck = await db.query(
-        //     `SELECT title, companyHandle
-        //     FROM jobs
-        //     WHERE company_handle = $1`,
-        //     [companyHandle]);        
-            
-        // if (duplicateCheck.rows[0])
-        //     throw new BadRequestError(`Duplicate job: ${companyHandle}`);
-            
         const result = await db.query(
             `INSERT INTO jobs
                 (title, salary, equity, company_handle)
                 VALUES ($1, $2, $3, $4)
-                RETURNING id, title, salary, equity, company_handle AS companyHandle`,
+                RETURNING id, title, salary, equity, company_handle AS "companyHandle"`,
             [
             title, 
             salary, 
@@ -49,7 +42,48 @@ class Job {
    * TODO:
    * Returns [{ _______ }, ...]
    * */
-
+     static async findAll(_queries = {}) {
+        let query = `SELECT 
+                        id, 
+                        title, 
+                        salary, 
+                        equity, 
+                        company_handle
+                        FROM jobs`
+        
+        let wheres = [];
+        let parameterizers = [];
+        let queryLength=0;
+        
+        const { title, minSalary, hasEquity } = _queries;
+        
+        if (minSalary !== undefined){
+          queryLength++;
+          parameterizers.push(minSalary);
+          wheres.push(`salary >= $${queryLength}`)
+        }
+    
+        if (hasEquity !==undefined){
+          queryLength++;
+          parameterizers.push(`equity > 0`)
+        }
+    
+        if (title){
+          queryLength++;
+          parameterizers.push(`%${title}%`);
+          wheres.push(`title ILIKE $${queryLength}`)
+        }
+        
+        //TODO: should this be for (ea of wheres)?  or .map()?
+        if (queryLength > 0) {
+          query += " WHERE " + wheres.join(" AND ");
+        }
+    
+        query += " ORDER BY title";
+        
+        const jobRes = await db.query(query, parameterizers);
+        return jobRes.rows;
+      }
 
 
 

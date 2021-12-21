@@ -1,4 +1,6 @@
 "use strict"; 
+const request = require("supertest");
+const app = require("../app");
 
 const db = require("../db.js");
 const { BadRequestError, NotFoundError } = require("../expressError");
@@ -25,13 +27,16 @@ afterAll(commonAfterAll);
     const newJob = {
         title: "New job",
         salary: 60000,
-        equity: 0.1,
+        equity: "0.1",
         companyHandle: "c1",
     };
   
     test("works", async function () {
         let job = await Job.create(newJob);
-        expect(job.title).toEqual(newJob.title);
+        expect(job).toEqual({
+            ...newJob,
+            id:expect.any(Number)
+        });
   
     const result = await db.query(
         `SELECT id, title, salary, equity, company_handle
