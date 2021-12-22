@@ -71,7 +71,7 @@ afterAll(commonAfterAll);
             salary: 60000,
             equity: "0.1",
             companyHandle: "c1",
-            companyName: "C1",
+            companyName: "C1"
         },
         {
             id: expect.any(Number),
@@ -79,7 +79,7 @@ afterAll(commonAfterAll);
             salary: 100000,
             equity: "0.2",
             companyHandle: "c2",
-            companyName: "C2",
+            companyName: "C2"
         },
         {
             id: expect.any(Number),
@@ -87,16 +87,9 @@ afterAll(commonAfterAll);
             salary: 200000,
             equity: "0.3",
             companyHandle: "c2",
-            companyName: "C2",
-        },
-        {
-            id: expect.any(Number),
-            title: "Job4",
-            salary: null,
-            equity: null,
-            companyHandle: "c1",
-            companyName: "C1",
-        },
+            companyName: "C2"
+        }
+
       ]);
     });
 });
